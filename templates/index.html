@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Stock Analysis</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Stock Analyst</h1>
+        <div id="loading">Analyzing live market data...</div>
+        <div id="result" class="hidden">
+            <h2>DeepSeek Analysis</h2>
+            <div id="prediction"></div>
+            <button onclick="refreshAnalysis()">Refresh Analysis</button>
+        </div>
+    </div>
+
+    <script>
+        // Auto-run analysis on load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch("/analyze", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"}
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("loading").classList.add("hidden");
+                const resultDiv = document.getElementById("result");
+                resultDiv.classList.remove("hidden");
+                
+                if (data.success) {
+                    document.getElementById("prediction").innerHTML = 
+                        data.prediction.replace(/\n/g, "<br>");
+                } else {
+                    document.getElementById("prediction").innerHTML = 
+                        `Error: ${data.error}`;
+                }
+            });
+        });
+
+        function refreshAnalysis() {
+            document.getElementById("result").classList.add("hidden");
+            document.getElementById("loading").classList.remove("hidden");
+            document.dispatchEvent(new Event('DOMContentLoaded'));
+        }
+    </script>
+</body>
+</html>
